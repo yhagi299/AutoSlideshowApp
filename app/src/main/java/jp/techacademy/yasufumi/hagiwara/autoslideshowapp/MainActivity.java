@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -82,23 +81,7 @@ public class MainActivity extends AppCompatActivity {
                                 mHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (mCursor.isLast()) {
-                                            if (mCursor.moveToFirst()) {
-                                                int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
-                                                Long id = mCursor.getLong(fieldIndex);
-                                                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                                                mImageView.setImageURI(imageUri);
-                                                Log.d("ANDROID", "URI:" + imageUri.toString());
-                                            }
-                                        } else if(mCursor.moveToNext()) {
-                                            int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
-                                            Long id = mCursor.getLong(fieldIndex);
-                                            Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                                            mImageView.setImageURI(imageUri);
-                                            Log.d("ANDROID", "URI:" + imageUri.toString());
-                                        }
+                                        goForward();
                                     }
                                 });
                             }
@@ -117,23 +100,7 @@ public class MainActivity extends AppCompatActivity {
         mForwardButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCursor.isLast()){
-                    if(mCursor.moveToFirst()){
-                        int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
-                        Long id = mCursor.getLong(fieldIndex);
-                        Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                        mImageView.setImageURI(imageUri);
-                        Log.d("ANDROID", "URI:" + imageUri.toString());
-                    }
-                } else if(mCursor.moveToNext()) {
-                    int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
-                    Long id = mCursor.getLong(fieldIndex);
-                    Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                    mImageView.setImageURI(imageUri);
-                    //Log.d("ANDROID", "URI:" + imageUri.toString());
-                }
+                goForward();
             }
         });
 
@@ -141,23 +108,7 @@ public class MainActivity extends AppCompatActivity {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCursor.isFirst()){
-                    if (mCursor.moveToLast()){
-                        int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
-                        Long id = mCursor.getLong(fieldIndex);
-                        Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                        mImageView.setImageURI(imageUri);
-                        //Log.d("ANDROID", "URI:" + imageUri.toString());
-                    }
-                } else if(mCursor.moveToPrevious()) {
-                    int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
-                    Long id = mCursor.getLong(fieldIndex);
-                    Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
-
-                    mImageView.setImageURI(imageUri);
-                    //Log.d("ANDROID", "URI:" + imageUri.toString());
-                }
+                goBack();
             }
         });
     }
@@ -187,15 +138,64 @@ public class MainActivity extends AppCompatActivity {
                 null
         );
 
-        if(mCursor.moveToFirst()) {
+        if (mCursor != null){
+            if(mCursor.moveToFirst()) {
                 int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
                 Long id = mCursor.getLong(fieldIndex);
                 Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
                 mImageView.setImageURI(imageUri);
                 //Log.d("ANDROID", "URI:" + imageUri.toString());
+            }
         }
     }
+
+
+    private void goBack() {
+        if (mCursor != null) {
+            if (mCursor.isFirst()) {
+                if (mCursor.moveToLast()) {
+                    int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
+                    Long id = mCursor.getLong(fieldIndex);
+                    Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                    mImageView.setImageURI(imageUri);
+                    //Log.d("ANDROID", "URI:" + imageUri.toString());
+                }
+            } else if (mCursor.moveToPrevious()) {
+                int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = mCursor.getLong(fieldIndex);
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                mImageView.setImageURI(imageUri);
+                //Log.d("ANDROID", "URI:" + imageUri.toString());
+            }
+        }
+    }
+
+
+    private void goForward() {
+        if (mCursor != null) {
+            if (mCursor.isLast()) {
+                if (mCursor.moveToFirst()) {
+                    int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
+                    Long id = mCursor.getLong(fieldIndex);
+                    Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                    mImageView.setImageURI(imageUri);
+                    //Log.d("ANDROID", "URI:" + imageUri.toString());
+                }
+            } else if (mCursor.moveToNext()) {
+                int fieldIndex = mCursor.getColumnIndex(MediaStore.Images.Media._ID);
+                Long id = mCursor.getLong(fieldIndex);
+                Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
+
+                mImageView.setImageURI(imageUri);
+                //Log.d("ANDROID", "URI:" + imageUri.toString());
+            }
+        }
+    }
+
 
     @Override
     protected void onDestroy(){
